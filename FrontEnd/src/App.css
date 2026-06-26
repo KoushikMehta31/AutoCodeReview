@@ -61,3 +61,12 @@ main .right {
   font-size: 1.1rem;
   overflow: auto;
 }
+
+.error {
+  background-color: #5c1a1a;
+  color: #ff6b6b;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+}

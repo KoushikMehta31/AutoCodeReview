@@ -1,8 +1,18 @@
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 
-const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GEMINI_KEY);
+const apiKey = process.env.GOOGLE_GEMINI_KEY;
 
-// Define system instructions as a separate constant for better readability
+if (!apiKey || apiKey === "your_gemini_api_key_here") {
+    console.error("ERROR: GOOGLE_GEMINI_KEY is not set or is still the placeholder value.")
+    console.error("1. Go to https://aistudio.google.com/app/apikey")
+    console.error("2. Create a new API key")
+    console.error("3. Paste it into BackEnd/.env as:")
+    console.error("   GOOGLE_GEMINI_KEY=your_actual_key_here")
+    process.exit(1)
+}
+
+const genAI = new GoogleGenerativeAI(apiKey);
+
 const SYSTEM_INSTRUCTIONS = `
     AI System Instruction: Senior Code Reviewer (7+ Years of Experience)
 
@@ -20,7 +30,7 @@ const SYSTEM_INSTRUCTIONS = `
     3. Detect & Fix Performance Bottlenecks.
     4. Ensure Security Compliance (e.g., prevent SQL injection, XSS, CSRF).
     5. Promote Consistency in formatting, naming conventions, and style guides.
-    6. Follow DRY (Don’t Repeat Yourself) & SOLID Principles.
+    6. Follow DRY (Don't Repeat Yourself) & SOLID Principles.
     7. Identify Unnecessary Complexity and recommend simplifications.
     8. Verify Test Coverage and suggest improvements.
     9. Ensure Proper Documentation.
@@ -37,7 +47,7 @@ const SYSTEM_INSTRUCTIONS = `
     \`\`\`
 
     🔍 **Issues**:
-    - ❌ fetch() is asynchronous, but the function doesn’t handle promises correctly.
+    - ❌ fetch() is asynchronous, but the function doesn't handle promises correctly.
     - ❌ Missing error handling for failed API calls.
 
     ✅ **Recommended Fix**:
@@ -62,17 +72,11 @@ const SYSTEM_INSTRUCTIONS = `
     Your mission is to ensure every piece of code follows high standards, focusing on performance, security, and maintainability.
 `;
 
-// Initialize the AI model with system instructions
 const model = genAI.getGenerativeModel({
-    model: "gemini-2.0-flash",
+    model: "gemini-2.5-flash",
     systemInstruction: SYSTEM_INSTRUCTIONS,
 });
 
-/**
- * Generates AI-based content based on a given prompt.
- * @param {string} prompt - The input prompt for the AI model.
- * @returns {Promise<string>} - The generated response text.
- */
 async function generateContent(prompt) {
     try {
         const result = await model.generateContent(prompt);
@@ -80,10 +84,19 @@ async function generateContent(prompt) {
 
         if (!responseText) throw new Error("Empty response received from AI model.");
 
-        console.log(responseText);
         return responseText;
     } catch (error) {
-        console.error("Error generating content:", error.message);
+        const msg = error.message || "";
+        console.error("Error generating content:", msg);
+        if (msg.includes("API_KEY_INVALID")) {
+            throw new Error("Invalid API key. Please check your GOOGLE_GEMINI_KEY in the .env file.");
+        }
+        if (msg.includes("RESOURCE_EXHAUSTED") || msg.includes("429") || msg.includes("quota")) {
+            throw new Error("Gemini API quota exceeded. The free tier daily limit has been reached. Wait until it resets or use a different API key.");
+        }
+        if (msg.includes("not found") || msg.includes("404")) {
+            throw new Error("AI model not found. The model name may be incorrect or deprecated.");
+        }
         throw new Error("AI content generation failed. Please try again later.");
     }
 }

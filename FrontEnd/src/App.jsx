@@ -9,20 +9,31 @@ import axios from 'axios'
 import './App.css'
 
 function App() {
-  const [ count, setCount ] = useState(0)
   const [ code, setCode ] = useState(` function sum() {
   return 1 + 1
 }`)
 
   const [ review, setReview ] = useState(``)
+  const [ loading, setLoading ] = useState(false)
+  const [ error, setError ] = useState("")
 
   useEffect(() => {
     prism.highlightAll()
   }, [])
 
   async function reviewCode() {
-    const response = await axios.post('http://localhost:3000/ai/get-review', { code })
-    setReview(response.data)
+    setLoading(true)
+    setError("")
+    try {
+      const response = await axios.post('/ai/get-review', { code })
+      setReview(response.data)
+    } catch (err) {
+      const msg = err.response?.data?.message || "Something went wrong. Check the backend logs."
+      setError(msg)
+      setReview("")
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -47,9 +58,10 @@ function App() {
           </div>
           <div
             onClick={reviewCode}
-            className="review">Review</div>
+            className="review">{loading ? "Reviewing..." : "Review"}</div>
         </div>
         <div className="right">
+          {error && <div className="error">{error}</div>}
           <Markdown
 
             rehypePlugins={[ rehypeHighlight ]}
