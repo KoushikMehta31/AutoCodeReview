@@ -1,5 +1,5 @@
-# 🧠 AI AutoCodeReview
 
+<<<<<<< HEAD
  Developed an **AI AutoCodeReview** tool using Node.js, Express, React.js, and Google Generative AI. Enabled
  intelligent feedback generation via POST requests, with syntax highlighting (PrismJS) and Markdown rendering
  for clean code display.
@@ -138,3 +138,5 @@ npm run dev
 The frontend dev server at `http://localhost:5173` proxies API calls to the backend at `http://localhost:3000`.
 
 ---
+=======
+>>>>>>> 03a193da03dcae99fa35186577fbe376fd651f42
