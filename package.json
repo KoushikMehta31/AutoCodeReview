@@ -1,0 +1,10 @@
+{
+  "name": "ai-autocodereview",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "install": "cd BackEnd && npm install",
+    "start": "cd BackEnd && npm start",
+    "build": "cd FrontEnd && npm install && npm run build"
+  }
+}
