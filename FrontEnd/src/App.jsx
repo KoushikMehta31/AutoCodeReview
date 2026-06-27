@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import "prismjs/themes/prism-tomorrow.css"
 import Editor from "react-simple-code-editor"
 import prism from "prismjs"
@@ -93,8 +93,6 @@ function App() {
   const [copyMsg, setCopyMsg] = useState('')
   const [quotaExceeded, setQuotaExceeded] = useState(false)
   const [selectedLanguage, setSelectedLanguage] = useState('')
-
-  useEffect(() => { prism.highlightAll() }, [])
 
   async function reviewCode() {
     setLoading(true)

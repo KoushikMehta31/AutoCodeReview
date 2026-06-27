@@ -1,4 +1,4 @@
-const { GoogleGenerativeAI } = require("@google/generative-ai");
+const { GoogleGenAI } = require("@google/genai");
 
 const apiKey = process.env.GOOGLE_GEMINI_KEY;
 
@@ -11,7 +11,7 @@ if (!apiKey || apiKey === "your_gemini_api_key_here") {
     process.exit(1)
 }
 
-const genAI = new GoogleGenerativeAI(apiKey);
+const ai = new GoogleGenAI({ apiKey: apiKey });
 
 const SYSTEM_INSTRUCTIONS = `
 You are a Senior Software Engineer and AI Code Reviewer.
@@ -80,18 +80,19 @@ If there are no errors:
 Always use simple English for all text fields.
 `;
 
-const model = genAI.getGenerativeModel({
-    model: "gemini-2.5-flash",
-    systemInstruction: SYSTEM_INSTRUCTIONS,
-});
-
 async function generateContent(prompt, selectedLanguage = "") {
     try {
         const fullPrompt = selectedLanguage
             ? `Selected Language: ${selectedLanguage}\n\n---\n\nCode to review:\n${prompt}`
             : prompt;
-        const result = await model.generateContent(fullPrompt);
-        const responseText = result.response.text();
+        const response = await ai.models.generateContent({
+            model: "gemini-2.5-flash",
+            contents: fullPrompt,
+            config: {
+                systemInstruction: SYSTEM_INSTRUCTIONS,
+            },
+        });
+        const responseText = response.text;
 
         if (!responseText) throw new Error("Empty response received from AI model.");
 
