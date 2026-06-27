@@ -102,7 +102,8 @@ function App() {
     setCopyMsg('')
     setQuotaExceeded(false)
     try {
-      const response = await axios.post('/ai/get-review', { code, language: selectedLanguage })
+      const BASE_URL = import.meta.env.VITE_API_URL || ''
+      const response = await axios.post(`${BASE_URL}/ai/get-review`, { code, language: selectedLanguage })
       setReview(String(response.data))
     } catch (err) {
       const status = err.response?.status

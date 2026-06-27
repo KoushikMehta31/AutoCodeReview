@@ -1,0 +1,28 @@
+services:
+  - type: web
+    name: ai-autocodereview-backend
+    env: node
+    rootDir: BackEnd
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: PORT
+        value: 3000
+      - key: GOOGLE_GEMINI_KEY
+        sync: false
+      - key: CORS_ORIGIN
+        sync: false
+
+  - type: static
+    name: ai-autocodereview-frontend
+    env: static
+    rootDir: FrontEnd
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
+    envVars:
+      - key: VITE_API_URL
+        sync: false
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
